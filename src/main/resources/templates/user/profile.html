@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+<title>Perfil User</title>
+</head>
+<body>
+<section>
+	<div class="container-fluid mt-2 p-5 bg-light">
+		<div class="row">
+			<div class="container py-5">
+				<div class="row justify-content-center">
+					<div class="col-md-8">
+						<div class="card shadow">
+							<div class="card-body">
+								<h3 class="card-title text-center mb-4">Actualizar foto de perfil</h3>
+
+								<!-- Mensajes de éxito o error -->
+								<div th:if="${session.succMsg}" class="alert alert-success text-center" role="alert" id="succMessage">
+									[[${session.succMsg}]]
+									<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+								</div>
+
+								<div th:if="${session.errorMsg}" class="alert alert-danger text-center" role="alert" id="errorMessage">
+									[[${session.errorMsg}]]
+									<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+								</div>
+
+								<div class="mb-4 position-relative" style="display: inline-block; margin-left: 30rem">
+									<img th:src="@{'img/user_img/'+${user.profileImage}}"
+										 alt="Foto de perfil"
+										 class="img-thumbnail rounded-circle border-primary"
+										 style="width: 160px; height: 160px; object-fit: cover; border: 4px solid #007bff;">
+									<label for="img"
+										   class="position-absolute d-flex align-items-center justify-content-center"
+										   style="bottom: 0; right: 0; width: 40px; height: 40px; background-color: #007bff; color: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); cursor: pointer;">
+										<i class="fas fa-camera"></i>
+									</label>
+								</div>
+								<h2 class="card-title text-center mb-4">Mi perfil</h2>
+								<form action="/user/update-profile" method="post" enctype="multipart/form-data">
+									<input type="hidden" th:value="${user.id}" name="id">
+									<div class="mb-3 row">
+										<label for="name" class="col-sm-3 col-form-label">Nombre</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="name" name="name" th:value="${user.name}">
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="mobileNumber" class="col-sm-3 col-form-label">Teléfono</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="mobileNumber" name="mobileNumber" th:value="${user.mobileNumber}">
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="email" class="col-sm-3 col-form-label">Correo</label>
+										<div class="col-sm-9">
+											<input type="email" class="form-control" id="email" th:value="${user.email}" readonly>
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="address" class="col-sm-3 col-form-label">Dirección</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="address" name="address" th:value="${user.address}">
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="city" class="col-sm-3 col-form-label">Ciudad</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="city" name="city" th:value="${user.city}">
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="state" class="col-sm-3 col-form-label">Distrito</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="state" name="state" th:value="${user.state}">
+										</div>
+									</div>
+
+									<div class="mb-3 row">
+										<label for="pincode" class="col-sm-3 col-form-label">Código Postal</label>
+										<div class="col-sm-9">
+											<input type="text" class="form-control" id="pincode" name="pincode" th:value="${user.pincode}">
+										</div>
+									</div>
+
+									<!-- Input oculto para cargar la imagen -->
+									<div class="mb-3 row">
+										<label for="img" class="col-sm-3 col-form-label"></label>
+										<div class="col-sm-9">
+											<input type="file" class="form-control d-none" id="img" name="img">
+										</div>
+									</div>
+
+									<div class="text-center">
+										<button type="submit" class="btn btn-primary">Actualizar</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Botón para abrir el modal -->
+			<div class="col-md-10 offset-md-1 mt-1 text-center">
+				<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Cambiar Contraseña</button>
+			</div>
+
+			<!-- Modal Cambiar Contraseña -->
+			<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="changePasswordModalLabel">Cambiar Contraseña</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+						</div>
+						<form action="/user/change-password" method="post">
+							<div class="modal-body">
+								<div class="mb-3">
+									<label for="currentPassword" class="form-label">Contraseña Actual</label>
+									<input type="password" name="currentPassword" class="form-control" id="currentPassword" required autocomplete="current-password" placeholder="contraseña">
+								</div>
+								<div class="mb-3">
+									<label for="newPassword" class="form-label">Nueva Contraseña</label>
+									<input type="password" name="newPassword" class="form-control" id="newPassword" required autocomplete="new-password" placeholder="nueva contraseña">
+								</div>
+								<div class="mb-3">
+									<label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+									<input type="password" name="confirmPassword" class="form-control" id="confirmPassword" required autocomplete="new-password" placeholder="confirmar contraseña">
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+								<button type="submit" class="btn btn-success">Actualizar Contraseña</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			//ocular message
+			let succMessage = document.getElementById('succMessage');
+			let errorMessage = document.getElementById('errorMessage')
+			if (succMessage  || errorMessage) {
+				setTimeout(function () {
+					succMessage.style.transition = 'opacity 1s ease';
+					succMessage.style.opacity = '0';
+					setTimeout(function () {
+						succMessage.style.display = 'none';
+					}, 1000);
+				}, 5000);
+			}
+		});
+	</script>
+</section>
+</body>
+</html>

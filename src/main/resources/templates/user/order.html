@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+<title>Sumaq Perú</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<style>
+		#map {
+			height: 400px;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+	<section>
+		<div class="container mt-5 p-4">
+			<!-- Ubicación de Entrega -->
+			<div class="card shadow-sm">
+				<div class="card-body">
+					<h3 class="card-title mb-4">Ubicación de Entrega</h3>
+					<div class="mb-3">
+						<label for="addressInput" class="form-label">Buscar ubicación</label>
+						<div class="input-group">
+							<input type="text" class="form-control" id="addressInput" placeholder="Ingresa una dirección" >
+							<button class="btn btn-outline-secondary" type="button" id="searchLocation">Buscar</button>
+						</div>
+					</div>
+					<div id="map" style="height: 300px; width: 100%;" class="mb-3 border rounded"></div>
+					<input type="hidden" id="latitude" name="latitude">
+					<input type="hidden" id="longitude" name="longitude">
+				</div>
+			</div>
+			<form action="/user/save-order" method="post" id="orders" novalidate>
+				<div class="row">
+					<!-- Dirección de Facturación -->
+					<div class="col-md-6">
+						<div class="mb-4">
+							<p class="text-center fs-4 fw-bold">Dirección de Facturación</p>
+							<hr class="my-3">
+							<div class="row">
+								<div class="col p-1">
+									<label class="form-label">Nombre</label>
+									<input type="text" name="firstName" required class="form-control mt-1">
+								</div>
+								<div class="col p-1">
+									<label class="form-label">Apellidos</label>
+									<input type="text" name="lastName" required class="form-control mt-1">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col p-1">
+									<label class="form-label">Correo</label>
+									<input type="email" name="email" required class="form-control">
+								</div>
+								<div class="col p-1">
+									<label class="form-label">Teléfono</label>
+									<input type="text" name="mobileNo" required class="form-control">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col p-1">
+									<label class="form-label">Dirección</label>
+									<input type="text" name="address" id="output" class="form-control" readonly>
+								</div>
+								<div class="col p-1">
+									<label class="form-label">Ciudad</label>
+									<input type="text" name="city" required class="form-control">
+								</div>
+							</div>
+
+							<div class="row">
+								<div class="col p-1">
+									<label class="form-label">Distrito</label>
+									<input type="text" name="state" required class="form-control">
+								</div>
+								<div class="col p-1">
+									<label class="form-label">Pincode</label>
+									<input type="number" name="pincode" required class="form-control">
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Tipo de Pago -->
+					<div class="col-md-6">
+						<p class="text-center fs-4 fw-bold">Tipo de Pago</p>
+						<hr class="my-3">
+
+						<div class="card shadow-sm mb-3">
+							<div class="card-body">
+								<table class="table table-borderless">
+									<tbody>
+									<tr>
+										<td>Precio SN/IGV</td>
+										<td>:</td>
+										<td>&#83;&#47; [[${orderPrice}]]</td>
+									</tr>
+									<tr>
+										<td>Delivery Gratis</td>
+										<td>:</td>
+										<td>&#83;&#47;</td>
+									</tr>
+									<tr>
+										<td>IGV</td>
+										<td>:</td>
+										<td>&#83;&#47; [[${igv}]]</td>
+									</tr>
+									<tr class="border-top">
+										<td>Precio Total</td>
+										<td>:</td>
+										<td>&#83;&#47; [[${totalOrderPrice}]]</td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="card shadow-sm mb-5">
+							<div class="card-body">
+								<div class="mb-3">
+									<label class="form-label">Seleccionar Tipo de Pago</label>
+									<select required name="paymentType" class="form-select">
+										<option value="">-- Selección --</option>
+										<option value="COD">Pago Contra Entrega</option>
+										<option value="ONLINE">Pago Online</option>
+									</select>
+								</div>
+
+								<button class="btn btn-primary btn-lg w-100">Realizar Pedido</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script>
+			let map, marker, geocoder; // Mapa, marcador y servicio de Geocoding
+			const addressInput = document.getElementById("addressInput");
+			const searchButton = document.getElementById("searchLocation");
+			const output = document.getElementById("output");
+
+			function initMap() {
+				// Inicializa el mapa
+				map = new google.maps.Map(document.getElementById("map"), {
+					center: { lat: 0, lng: 0 }, // Coordenadas iniciales
+					zoom: 2, // Zoom inicial
+				});
+
+				// Inicializa el servicio de Geocoding
+				geocoder = new google.maps.Geocoder();
+
+				// Agregar evento click al mapa
+				map.addListener("click", (event) => {
+					const lat = event.latLng.lat();
+					const lng = event.latLng.lng();
+
+					// Actualizar marcador y formulario
+					updateMarker(lat, lng);
+					updateForm(lat, lng);
+
+					// Obtener dirección con geocoding inverso
+					geocodeLatLng(lat, lng);
+				});
+			}
+
+			// Actualiza el marcador en el mapa
+			function updateMarker(lat, lng) {
+				const location = { lat, lng };
+				if (marker) {
+					marker.setPosition(location); // Actualizar posición del marcador
+				} else {
+					marker = new google.maps.Marker({
+						position: location,
+						map: map,
+						title: "Ubicación seleccionada",
+					});
+				}
+				map.setCenter(location); // Centrar el mapa
+				map.setZoom(15); // Zoom cercano
+			}
+
+			// Actualiza los campos ocultos del formulario
+			function updateForm(lat, lng) {
+				document.getElementById("latitude").value = lat;
+				document.getElementById("longitude").value = lng;
+			}
+
+			// Búsqueda de dirección usando Geocoding inverso
+			function geocodeLatLng(lat, lng) {
+				const latlng = { lat, lng };
+				geocoder.geocode({ location: latlng }, (results, status) => {
+					if (status === "OK") {
+						if (results[0]) {
+							const address = results[0].formatted_address;
+							console.log(`Dirección: ${address}, Latitud: ${lat}, Longitud: ${lng}`);
+							document.getElementById("output").value = address;
+						} else {
+							console.log("No se encontraron resultados para esta ubicación.");
+						}
+					} else {
+						console.log("Error en Geocoding inverso: " + status);
+					}
+				});
+			}
+			searchButton.addEventListener("click", () => {
+				const address = addressInput.value;
+				if (!address) {
+					alert("Por favor, ingresa una dirección.");
+					return;
+				}
+				geocoder.geocode({ address: address }, (results, status) => {
+					if (status === "OK") {
+						const location = results[0].geometry.location;
+						const lat = location.lat();
+						const lng = location.lng();
+
+						updateMarker(lat, lng);
+						updateForm(lat, lng);
+
+						document.getElementById("output").value = results[0].formatted_address;
+						console.log(`Ubicación encontrada: ${results[0].formatted_address}`);
+					} else {
+						alert("No se encontró la ubicación: " + status);
+					}
+				});
+			});
+		</script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap" async defer></script>
+	</section>
+
+</body>
+</html>

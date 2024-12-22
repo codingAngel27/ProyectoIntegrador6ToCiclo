@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+    <meta charset="UTF-8">
+    <title>Sumaq Peru</title>
+	<link rel="icon" href="/img/pngPeru.png" type="image/x-icon">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        html, body{
+            height: 100vh;
+            margin-top: 30px;
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 10px;
+            z-index: 100;
+            background-color: #384B70;
+            transition: all 0.3s ease;
+            height: auto;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+        }
+        .nav-link {
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #ffc107 !important;
+        }
+        .dropdown-item {
+            transition: background-color 0.3s ease;
+        }
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        @media (max-width: 991.98px) {
+            .navbar-nav {
+                background-color: #384B70;
+                padding-top: 1rem;
+                padding-left: 1rem;
+            }
+            .navbar-nav .nav-item {
+                padding: 0.5rem 0;
+            }
+        }
+        .footer {
+            background-color: #384B70;
+            padding: 1rem 0;
+            color: #fff;
+            margin-top: auto; /* Esto asegura que el footer se empuje hacia abajo */
+        }
+
+        @media (max-width: 768px) {
+            .navbar .nav-link {
+                margin-right: 0.5rem;
+            }
+            .footer .row {
+                text-align: center;
+            }
+            .footer .social-icons {
+                text-align: center;
+            }
+        }
+        /*.announcement-banner {
+            background: linear-gradient(45deg, #003161, #000B58);
+            color: white;
+            padding: 10px 0;
+            overflow: hidden;
+            position: relative;
+            height: 60px; 
+        }
+        .announcement-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: slide 20s linear infinite;
+            white-space: nowrap;
+        }
+
+        .announcement-text {
+            font-size: 1.1rem;
+            margin: 0 15px;
+        }
+
+        .announcement-banner i {
+            font-size: 1.3rem;
+            margin: 0 10px;
+        }
+
+        @keyframes slide {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .announcement-text {
+                font-size: 0.9rem;
+            }
+            .announcement-banner i {
+                font-size: 1.1rem;
+            }
+        }*/
+    </style>
+</head>
+<body>
+<!-- Start Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark py-3 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/pngPeru.png" alt="Sumaq Perú" class="me-2" style="width: 40px; height: auto;">
+            <span class="fw-bold">Sumaq Perú</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <th:block th:if="${user==null}">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                </th:block>
+
+                <th:block th:unless="${user==null}">
+                    <li class="nav-item" th:if="${user.role=='ROLE_ADMIN'}">
+                        <a class="nav-link active" aria-current="page" href="/admin/">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${user.role=='ROLE_USER'}">
+                        <a class="nav-link active" aria-current="page" href="/">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                </th:block>
+
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/products">
+                        <i class="fas fa-box-open me-1"></i> Productos
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-tags me-1"></i> Categoría
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li th:each="c:${categorys}">
+                            <a class="dropdown-item" th:href="@{'/products?category='+${c.name}}">
+                                <i class="fas fa-tag me-1"></i> [[${c.name}]]
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <th:block th:if="${user==null}">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/signin">
+                            <i class="fas fa-sign-in-alt me-1"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/register">
+                            <i class="fas fa-user-plus me-1"></i> Registrarse
+                        </a>
+                    </li>
+                </th:block>
+
+                <th:block th:if="${user!=null}">
+                    <th:block th:if="${user.role=='ROLE_USER'}">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/user/cart">
+                                <i class="fas fa-shopping-cart me-1"></i> Carrito
+                                <span class="badge bg-danger ms-1">[[${countCart}]]</span>
+                            </a>
+                        </li>
+                    </th:block>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i> [[${user.name}]]
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li th:if="${user.role=='ROLE_USER'}">
+                                <a class="dropdown-item" href="/user/profile">
+                                    <i class="fas fa-id-card me-1"></i> Perfil
+                                </a>
+                            </li>
+                            <li th:if="${user.role=='ROLE_ADMIN'}">
+                                <a class="dropdown-item" href="/admin/profile">
+                                    <i class="fas fa-id-card me-1"></i> Perfil
+                                </a>
+                            </li>
+                            <li th:if="${user.role=='ROLE_USER'}">
+                                <a class="dropdown-item" href="/user/user-orders">
+                                    <i class="fas fa-clipboard-list me-1"></i> Mis Ordenes
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="/logout">
+                                    <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </th:block>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!--<div class="announcement-banner">
+    <div class="announcement-content">
+        <i class="fas fa-truck"></i>
+        <span class="announcement-text">
+      ¡Envío <strong>GRATIS</strong> en toda la provincia de Lima! Descubre la artesanía peruana en tu puerta.
+        </span>
+        <i class="fas fa-gift"></i>
+    </div>
+</div>-->
+<!-- End Navbar -->
+
+    <div th:replace="${content}">
+    </div>
+<!-- Sección para scripts -->
+    <!-- Start Footer -->
+    <footer class="footer text-white py-5">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Columna de Información de la Empresa -->
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="text-uppercase mb-3">Sobre Sumaq Perú</h5>
+                    <p class="mb-4">En Sumaq Perú ofrecemos lo mejor de la artesanía y productos peruanos. Comprometidos con la calidad y el arte autóctono de nuestras tierras, traemos a tu hogar lo mejor de nuestra cultura.</p>
+                    <a href="https://wa.me/992403813" class="btn btn-success d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                        <i class="fab fa-whatsapp me-2"></i> Chatea con nosotros
+                    </a>
+                </div>
+
+                <!-- Columna de Enlaces Rápidos -->
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="text-uppercase mb-3">Enlaces Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="/" class="text-white text-decoration-none hover-link">Inicio</a></li>
+                        <li class="mb-2"><a href="/products" class="text-white text-decoration-none hover-link">Productos</a></li>
+                        <li class="mb-2"><a href="/about" class="text-white text-decoration-none hover-link">Sobre Nosotros</a></li>
+                        <li class="mb-2"><a href="/contact" class="text-white text-decoration-none hover-link">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <!-- Columna de Redes Sociales -->
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-uppercase mb-3">Síguenos</h5>
+                    <div class="d-flex flex-column gap-3">
+                        <a href="https://facebook.com" class="text-white text-decoration-none hover-link d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-facebook fa-fw me-2"></i> Facebook
+                        </a>
+                        <a href="https://instagram.com" class="text-white text-decoration-none hover-link d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-instagram fa-fw me-2"></i> Instagram
+                        </a>
+                        <a href="https://twitter.com" class="text-white text-decoration-none hover-link d-inline-flex align-items-center" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-twitter fa-fw me-2"></i> Twitter
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4 bg-light opacity-25">
+
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0">&copy; 2024 Sumaq Perú. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Jquery Validation Library  -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+    <script type="text/javascript" src="../js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

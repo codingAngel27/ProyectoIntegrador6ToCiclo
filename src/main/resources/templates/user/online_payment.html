@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Sumaq Perú</title>
+</head>
+<body>
+<section style="height: 90vh">
+	<div class="container mt-5 p-5">
+		<form action="/user/makePayment" method="post" id="orders" novalidate>
+			<div class="row">
+
+				<div class="col-md-6">
+					<div class="mb-3 row">
+						<p class="text-center fs-4">Datos de la Tarjeta</p>
+						<hr>
+						<div class="col p-1">
+							<label for="numeroTarjeta">Número de Tarjeta</label>
+							<input type="number" id="numeroTarjeta" name="numeroTarjeta" required class="form-control mt-1">
+						</div>
+						<div class="col p-1">
+							<label for="fechaVencimiento">Fecha de Vencimiento</label>
+							<input type="month" id="fechaVencimiento" name="fechaVencimiento" required class="form-control mt-1">
+						</div>
+					</div>
+
+					<div class="mb-3 row">
+						<div class="col p-1">
+							<label for="cvv">CVV</label>
+							<input type="number" id="cvv" name="cvv" required class="form-control mt-1">
+						</div>
+						<div class="col p-1">
+							<label for="nombre">Nombre Titular</label>
+							<input type="text" id="nombre" name="nombre" required class="form-control mt-1">
+						</div>
+					</div>
+
+					<div class="mb-3 row">
+						<div class="col p-1">
+							<label for="email">Correo</label>
+							<input type="email" id="email" name="email" required class="form-control mt-1">
+						</div>
+					</div>
+
+				</div>
+
+				<div class="col-md-6">
+					<p class="text-center fs-4">Monto a Pagar</p>
+					<hr>
+					<div class="card">
+						<div class="card-body">
+							<table class="table table-borderless">
+								<tbody>
+								<tr>
+									<td>Precio Total</td>
+									<td>:</td>
+									<td>&#83;&#47; [[${totalOrderPrice}]]</td>
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<button type="submit" class="btn bg-primary text-white col-md-12">Pagar</button>
+
+				</div>
+
+			</div>
+		</form>
+	</div>
+</section>
+</body>
+</html>

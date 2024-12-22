@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+<title>Sumaq Perú</title>
+</head>
+<body>
+	<section>
+		<div class="container-fluid mt-5 p-5">
+
+			<div class="card card-sh">
+				<div class="card-header text-center">
+					<p class="fs-4" th:if="${userType==1}">Usuario</p>
+					<p class="fs-4" th:if="${userType==2}">Administradores</p>
+					<th:block th:if="${session.succMsg}">
+						<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+
+					<th:block th:if="${session.errorMsg}">
+						<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+						<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+					</th:block>
+				</div>
+				<div class="card-body">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Id</th>
+								<th scope="col">Perfil</th>
+								<th scope="col">Nombre</th>
+								<th scope="col">Correo</th>
+								<th scope="col">Teléfono</th>
+								<th scope="col">Dirección</th>
+								<th scope="col">Estado</th>
+								<th scope="col">Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="u,c:${users}">
+								<th scope="row">[[${c.count}]]</th>
+								<td><img th:src="@{'/img/profile_img/'+${u.profileImage}}"
+									width="70px" height="70px"></td>
+								<td>[[${u.name}]]</td>
+								<td>[[${u.email}]]</td>
+								<td>[[${u.mobileNumber}]]</td>
+								<td>[[${u.address+','+u.city+','+u.state+','+u.pincode}]]</td>
+								<td>[[${u.isEnable}]]</td>
+								<td><a th:href="@{'/admin/updateSts?status=true&id='+${u.id}}+'&type='+${userType}"
+									class="btn btn-sm btn-primary">Activo</a> 
+										
+									<a
+									th:href="@{'/admin/updateSts?status=false&id='+${u.id}}+'&type='+${userType}"
+									class="btn btn-sm btn-danger">
+										Inactivo</a></td>
+							</tr>
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</section>
+</body>
+</html>

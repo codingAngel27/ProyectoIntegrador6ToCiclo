@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+<title>Sumaq Perú</title>
+</head>
+<body>
+	<section>
+		<div class="container p-5 mt-3">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<div class="card card-sh">
+						<div class="card-header text-center ">
+							<p class="fs-4">Editar Producto</p>
+
+							<th:block th:if="${session.succMsg}">
+								<p class="text-success fw-bold">[[${session.succMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+
+							<th:block th:if="${session.errorMsg}">
+								<p class="text-danger fw-bold">[[${session.errorMsg}]]</p>
+								<th:block th:text="${@commnServiceImpl.removeSessionMessage()}"></th:block>
+							</th:block>
+
+						</div>
+						<div class="card-body">
+							<form action="/admin/updateProduct" method="post"
+								enctype="multipart/form-data">
+								<input type="hidden" name="id" th:value="${product.id}">
+								<div class="mb-3">
+									<label>Introducir Título</label> <input type="text" name="title"
+										th:value="${product.title}" class="form-control">
+								</div>
+
+								<div class="mb-3">
+									<label>Introducir Descripción</label>
+									<textarea rows="3" cols="" class="form-control"
+										name="description">[[${product.description}]]</textarea>
+								</div>
+								<div class="row">
+									<div class="mb-3 col">
+										<label>Categoría</label>
+										<select class="form-control" name="idCategory">
+											<option value="">--seleccionar--</option>
+											<option th:each="c : ${categories}"
+													th:value="${c.id}"
+													th:text="${c.name}"
+													th:selected="${c.id == product.categoryId.id}">
+											</option>
+										</select>
+									</div>
+
+									<div class="mb-3 col">
+										<label>Introducir Precio</label> <input type="number" name="price"
+											th:value="${product.price}" class="form-control">
+									</div>
+								</div>
+
+								<div class="row">
+									<div class="mb-3 col">
+										<label>Descuento</label> <input type="number" name="discount"
+											th:value="${product.discount}" class="form-control">
+									</div>
+									<div class="mb-3 col">
+										<label>Precio Rebajado</label> <input type="number" readonly
+											th:value="${product.discountPrice}" class="form-control">
+									</div>
+								</div>
+
+								<div class="mb-3">
+									<label>Estado</label>
+
+									<div class="form-check">
+										<input class="form-check-input" type="radio" th:checked="${product.isActive==true}"
+											value="true" name="isActive" id="flexRadioDefault1">
+										<label class="form-check-label" for="flexRadioDefault1">
+											Activo </label>
+									</div>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="isActive" th:checked="${product.isActive==false}"
+											value="false" id="flexRadioDefault2"> <label
+											class="form-check-label" for="flexRadioDefault2">
+											Inactivo </label>
+									</div>
+
+								</div>
+
+								<div class="row">
+
+									<div class="mb-3 col">
+										<label>Introducir Stock</label> <input type="text" name="stock"
+											th:value="${product.stock}" class="form-control">
+									</div>
+
+									<div class="mb-3 col">
+										<label>Cargar Imagen</label> <input type="file" name="file"
+											class="form-control">
+									</div>
+
+									<div class="mt-2">
+										<img th:src="@{'/img/product_img/'+${product.image}}"
+											width="300px" height="300px" style="margin-left: 230px;">
+									</div>
+
+								</div>
+								<button class="btn btn-warning mt-3 col-md-12">Actualizar</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+</html>

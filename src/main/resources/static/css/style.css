@@ -1,0 +1,39 @@
+@charset "UTF-8";
+
+.card-sh {
+	box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cat-div {
+	box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+}
+
+.error {
+	color: red;
+}
+body{
+    background-color: #EEEEEE;
+}
+html{
+    scroll-behavior: smooth;
+}
+.carousel-caption {
+         position: absolute;
+         top: 55%;
+         left: 0;
+         transform: translateY(-50%);
+         text-align: left;
+         padding-left: 300px;
+         padding-right: 30px;
+     }
+
+     .carousel-caption h5 {
+         font-size: 2rem;
+         font-weight: bold;
+         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+     }
+
+     .carousel-caption p {
+         font-size: 1.2rem;
+         text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+     }

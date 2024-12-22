@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{base::layout(~{::section})}">
+<head>
+	<meta charset="UTF-8">
+<title>Sumaq Perú</title>
+</head>
+<body>
+	<section style="height: 80vh">
+		<div class="container mt-5 p-5">
+			<div class="row">
+				<div class="col-md-6 offset-md-3 text-center">
+					<i class="fa-solid fa-circle-check fa-5x text-success"></i>
+					<p class="fs-3">Producto ordenado con éxito</p>
+					<p class="fs-4">El producto se entregará en 7 días</p>
+					<div class="text-center">
+						<a href="/" class="btn btn-primary">Inicio</a> <a href="/user/user-orders"
+							class="btn btn-primary">Tus ordenes</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+</body>
+</html>
